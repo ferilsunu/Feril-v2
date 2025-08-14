@@ -719,12 +719,12 @@
             overflow: hidden;
             white-space: nowrap;
             border-right: 2px solid var(--primary-green);
-            animation: typewriter 2s steps(20) 1.5s forwards, blink 1s infinite 3.5s;
+            animation: typewriter 2s steps(20) 1.5s forwards, hideBorder 0.1s 3.5s forwards;
             width: 0;
         }
 
         .typewriter.title {
-            animation: typewriter 1.5s steps(15) 3.5s forwards, blink 1s infinite 5s;
+            animation: typewriter 1.5s steps(15) 3.5s forwards, hideBorder 0.1s 5s forwards;
         }
 
         @keyframes typewriter {
@@ -739,6 +739,24 @@
             }
             51%, 100% {
                 border-color: transparent;
+            }
+        }
+
+        @keyframes hideCursor {
+            to {
+                border-right-color: transparent;
+            }
+        }
+
+        @keyframes removeCursor {
+            to {
+                border-right: none;
+            }
+        }
+
+        @keyframes hideBorder {
+            to {
+                border-right: none;
             }
         }
 
@@ -2182,6 +2200,21 @@
             // Reset form
             event.target.reset();
         }
+
+        // Remove blinking cursor after typewriter animations complete
+        setTimeout(() => {
+            const nameElement = document.querySelector('.name.typewriter');
+            if (nameElement) {
+                nameElement.style.borderRight = 'none';
+            }
+        }, 3600); // After name typewriter completes (1.5s delay + 2s animation + 0.1s buffer)
+
+        setTimeout(() => {
+            const titleElement = document.querySelector('.title.typewriter');
+            if (titleElement) {
+                titleElement.style.borderRight = 'none';
+            }
+        }, 5100); // After title typewriter completes (3.5s delay + 1.5s animation + 0.1s buffer)
     </script>
 </body>
 </html>
