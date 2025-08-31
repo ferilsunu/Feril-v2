@@ -1,0 +1,754 @@
+import { useEffect, useRef } from 'react';
+import { useRouter } from 'next/router';
+import Head from 'next/head';
+
+export default function LandingPage() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Matrix rain effect
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
+    const matrixArray = matrix.split("");
+    const fontSize = 10;
+    const columns = canvas.width / fontSize;
+    const drops: number[] = [];
+
+    for (let x = 0; x < columns; x++) {
+      drops[x] = 1;
+    }
+
+    function drawMatrix() {
+      if (!ctx || !canvas) return;
+      
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#00ff00';
+      ctx.font = fontSize + 'px monospace';
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = matrixArray[Math.floor(Math.random() * matrixArray.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+
+    const matrixInterval = setInterval(drawMatrix, 35);
+
+    // Terminal animation logic
+    const terminalWindow = document.querySelector('.terminal-window') as HTMLElement;
+    const title = document.querySelector('.title') as HTMLElement;
+    const statusBars = document.querySelectorAll('.status-bar');
+    const progressFills = document.querySelectorAll('.progress-fill');
+    const typewriter = document.getElementById('typewriter') as HTMLElement;
+    const accessMsg = document.getElementById('accessMsg') as HTMLElement;
+    const enterBtn = document.getElementById('enterBtn') as HTMLElement;
+
+    const commands = [
+      "bypassing security protocols...",
+      "decrypting classified data..."
+    ];
+
+    let currentStep = 0;
+
+    function typeTitle(text: string, element: HTMLElement, callback: () => void) {
+      element.textContent = '';
+      element.classList.add('visible');
+      terminalWindow?.classList.add('typing-title');
+      let charIndex = 0;
+
+      function typeChar() {
+        if (charIndex < text.length) {
+          element.textContent += text.charAt(charIndex);
+          charIndex++;
+          setTimeout(typeChar, 50);
+        } else {
+          setTimeout(() => {
+            terminalWindow?.classList.remove('typing-title');
+            setTimeout(callback, 300);
+          }, 500);
+        }
+      }
+      typeChar();
+    }
+
+    function typeCommand(text: string, callback: () => void) {
+      if (!typewriter) return;
+      typewriter.textContent = '';
+      terminalWindow?.classList.add('typing-command');
+      let charIndex = 0;
+
+      function typeChar() {
+        if (charIndex < text.length) {
+          typewriter.textContent += text.charAt(charIndex);
+          charIndex++;
+          setTimeout(typeChar, 40);
+        } else {
+          setTimeout(callback, 500);
+        }
+      }
+      typeChar();
+    }
+
+    function processStatusBar(index: number, callback: () => void) {
+      if (index < statusBars.length) {
+        statusBars[index].classList.add('visible');
+        setTimeout(() => {
+          progressFills[index].classList.add('animate');
+          setTimeout(() => {
+            statusBars[index].classList.add('completed');
+            setTimeout(callback, 300);
+          }, 1500);
+        }, 200);
+      } else {
+        callback();
+      }
+    }
+
+    function runHackingSequence() {
+      if (currentStep < commands.length) {
+        typeCommand(commands[currentStep], () => {
+          processStatusBar(currentStep, () => {
+            currentStep++;
+            if (currentStep < commands.length) {
+              runHackingSequence();
+            } else {
+              terminalWindow?.classList.remove('typing-command');
+              terminalWindow?.classList.add('final-zoom-out');
+              if (typewriter) typewriter.textContent = '';
+
+              setTimeout(() => {
+                accessMsg?.classList.remove('hidden');
+                accessMsg?.classList.add('show');
+                setTimeout(() => {
+                  enterBtn?.classList.remove('hidden');
+                }, 1000);
+              }, 1000);
+            }
+          });
+        });
+      }
+    }
+
+    function startOpeningSequence() {
+      setTimeout(() => {
+        terminalWindow?.classList.add('open');
+      }, 500);
+
+      setTimeout(() => {
+        if (title) {
+          typeTitle('CRACKING DOWN FERIL', title, () => {
+            runHackingSequence();
+          });
+        }
+      }, 1500);
+    }
+
+    startOpeningSequence();
+
+    // Enter button functionality
+    const handleEnterClick = () => {
+      router.push('/portfolio');
+    };
+
+    enterBtn?.addEventListener('click', handleEnterClick);
+
+    // Particle system
+    function createParticle() {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.width = particle.style.height = Math.random() * 4 + 2 + 'px';
+      particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+      particle.style.animationDelay = Math.random() * 2 + 's';
+
+      const colors = ['#00ff00', '#00ffff', '#ff00ff', '#ffff00'];
+      particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+      const particlesContainer = document.getElementById('particles');
+      particlesContainer?.appendChild(particle);
+
+      setTimeout(() => {
+        particle.remove();
+      }, 8000);
+    }
+
+    const particleInterval = setInterval(createParticle, 300);
+
+    // Resize handler
+    const handleResize = () => {
+      if (canvas) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => {
+      clearInterval(matrixInterval);
+      clearInterval(particleInterval);
+      window.removeEventListener('resize', handleResize);
+      enterBtn?.removeEventListener('click', handleEnterClick);
+    };
+  }, [router]);
+
+  return (
+    <>
+      <Head>
+        <title>SYSTEM ACCESS GRANTED</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </Head>
+
+      <canvas ref={canvasRef} className="matrix-bg"></canvas>
+      <div className="network-grid"></div>
+      <div className="glitch-overlay"></div>
+      <div className="scanner"></div>
+      <div className="particles" id="particles"></div>
+
+      <div className="container">
+        <div className="terminal-window">
+          <div className="terminal-header">
+            <span style={{ color: '#00ffff', fontWeight: 'bold' }}>SECURE_TERMINAL_v3.7.9</span>
+            <div className="terminal-buttons">
+              <div className="terminal-button close"></div>
+              <div className="terminal-button minimize"></div>
+              <div className="terminal-button maximize"></div>
+            </div>
+          </div>
+
+          <div className="title">CRACKING DOWN FERIL</div>
+
+          <div className="command-line">
+            <span className="prompt">root@mainframe:~$</span>
+            <span className="command-text" id="typewriter"></span>
+            <span className="cursor"></span>
+          </div>
+
+          <div className="status-bars">
+            <div className="status-bar">
+              <div className="status-label">DATA EXTRACTION</div>
+              <div className="progress-bar">
+                <div className="progress-fill"></div>
+              </div>
+            </div>
+            <div className="status-bar">
+              <div className="status-label">ENCRYPTION CRACKED</div>
+              <div className="progress-bar">
+                <div className="progress-fill"></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="access-granted hidden" id="accessMsg">
+            &gt;&gt;&gt; ACCESS GRANTED &lt;&lt;&lt; <br />
+            <button className="enter-button hidden" id="enterBtn">ENTER</button>
+          </div>
+        </div>
+      </div>
+
+      <style jsx>{`
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'Share Tech Mono', monospace;
+          background: #000;
+          color: #00ff00;
+          overflow: hidden;
+          cursor: crosshair;
+        }
+
+        .matrix-bg {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 1;
+          opacity: 0.1;
+        }
+
+        .scanner {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 3px;
+          background: linear-gradient(90deg, transparent, #00ff00, transparent);
+          animation: scan 2s linear infinite;
+          z-index: 10;
+        }
+
+        @keyframes scan {
+          0% { transform: translateY(-3px); }
+          100% { transform: translateY(100vh); }
+        }
+
+        .container {
+          position: relative;
+          z-index: 5;
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          background:
+            radial-gradient(circle at 20% 20%, rgba(0, 255, 0, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 60% 40%, rgba(255, 0, 100, 0.1) 0%, transparent 50%);
+        }
+
+        .glitch-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: repeating-linear-gradient(0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 255, 0, 0.03) 2px,
+            rgba(0, 255, 0, 0.03) 4px);
+          pointer-events: none;
+          z-index: 2;
+          animation: flicker 0.15s infinite linear alternate;
+        }
+
+        @keyframes flicker {
+          0% { opacity: 0.9; }
+          100% { opacity: 1; }
+        }
+
+        .terminal-window {
+          background: rgba(0, 0, 0, 0.9);
+          border: 2px solid #00ff00;
+          border-radius: 10px;
+          padding: 20px;
+          width: 90%;
+          max-width: 800px;
+          box-shadow:
+            0 0 50px rgba(0, 255, 0, 0.3),
+            inset 0 0 20px rgba(0, 255, 0, 0.1);
+          position: relative;
+          backdrop-filter: blur(10px);
+          animation: terminalGlow 3s ease-in-out infinite alternate;
+          transform: scale(0.8) translateY(50px);
+          opacity: 0;
+          transition: all 1s ease-out;
+        }
+
+        .terminal-window.open {
+          transform: scale(1) translateY(0);
+          opacity: 1;
+        }
+
+        .terminal-window.typing-title {
+          transform: scale(1.4) translateY(-50px);
+          transition: transform 0.6s ease-in-out;
+        }
+
+        .terminal-window.typing-command {
+          transform: scale(1.3) translateY(-80px);
+          transition: transform 0.5s ease-in-out;
+        }
+
+        .terminal-window.final-zoom-out {
+          transform: scale(0.9) translateY(0);
+          transition: transform 1s ease-out;
+        }
+
+        @keyframes terminalGlow {
+          0% {
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.3), inset 0 0 20px rgba(0, 255, 0, 0.1);
+          }
+          100% {
+            box-shadow: 0 0 100px rgba(0, 255, 0, 0.5), inset 0 0 30px rgba(0, 255, 0, 0.2);
+          }
+        }
+
+        .terminal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+          padding-bottom: 10px;
+          border-bottom: 1px solid #00ff00;
+        }
+
+        .terminal-buttons {
+          display: flex;
+          gap: 5px;
+        }
+
+        .terminal-button {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          animation: pulse 2s infinite;
+        }
+
+        .terminal-button.close { background: #ff0000; }
+        .terminal-button.minimize { background: #ffff00; }
+        .terminal-button.maximize { background: #00ff00; }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+
+        .title {
+          font-family: 'Orbitron', monospace;
+          font-size: 3rem;
+          font-weight: 900;
+          text-align: center;
+          margin: 30px 0;
+          color: #00ff00;
+          animation: titleGlitch 0.3s infinite;
+          text-shadow:
+            0 0 10px rgba(0, 255, 0, 0.8),
+            0 0 20px rgba(0, 255, 0, 0.6),
+            0 0 30px rgba(0, 255, 0, 0.4);
+          opacity: 0;
+          transform: translateY(20px);
+          transition: all 0.8s ease;
+        }
+
+        .title.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        @keyframes titleGlitch {
+          0%, 90%, 100% { transform: translate(0); }
+          95% { transform: translate(-2px, 2px); }
+          97% { transform: translate(2px, -2px); }
+        }
+
+        .command-line {
+          display: flex;
+          align-items: center;
+          margin: 15px 0;
+          font-size: 1.2rem;
+        }
+
+        .prompt {
+          color: #ff00ff;
+          margin-right: 10px;
+          animation: promptPulse 1.5s infinite;
+        }
+
+        @keyframes promptPulse {
+          0%, 50% { text-shadow: 0 0 5px rgba(255, 0, 255, 0.8); }
+          100% { text-shadow: 0 0 15px rgba(255, 0, 255, 1); }
+        }
+
+        .command-text {
+          flex: 1;
+          color: #00ff00;
+        }
+
+        .cursor {
+          display: inline-block;
+          background: #00ff00;
+          width: 12px;
+          height: 20px;
+          animation: blink 1s infinite;
+          margin-left: 2px;
+        }
+
+        @keyframes blink {
+          0%, 50% { opacity: 1; }
+          51%, 100% { opacity: 0; }
+        }
+
+        .status-bars {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 15px;
+          margin: 30px 0;
+        }
+
+        .status-bar {
+          background: rgba(0, 50, 0, 0.3);
+          border: 1px solid #00ff00;
+          border-radius: 5px;
+          padding: 10px;
+          position: relative;
+          overflow: hidden;
+          opacity: 0;
+          transform: translateY(20px);
+          transition: all 0.5s ease;
+        }
+
+        .status-bar.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .status-bar.completed {
+          opacity: 0;
+          transform: translateY(-20px);
+          transition: all 0.5s ease;
+        }
+
+        .status-label {
+          font-size: 0.9rem;
+          color: #00ffff;
+          margin-bottom: 5px;
+        }
+
+        .progress-bar {
+          height: 20px;
+          background: rgba(0, 0, 0, 0.5);
+          border-radius: 10px;
+          overflow: hidden;
+          position: relative;
+        }
+
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00);
+          border-radius: 10px;
+          position: relative;
+          width: 0%;
+          transition: width 1.5s ease-in-out;
+        }
+
+        .progress-fill.animate {
+          width: 100%;
+        }
+
+        .progress-fill::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+          animation: shine 1.5s infinite;
+        }
+
+        @keyframes shine {
+          0% { left: -100%; }
+          100% { left: 100%; }
+        }
+
+        .access-granted {
+          font-family: 'Orbitron', monospace;
+          font-size: 2rem;
+          font-weight: 700;
+          text-align: center;
+          color: #00ff00;
+          margin-top: 30px;
+          text-shadow:
+            0 0 10px rgba(0, 255, 0, 1),
+            0 0 20px rgba(0, 255, 0, 0.8),
+            0 0 30px rgba(0, 255, 0, 0.6);
+        }
+
+        .access-granted.show {
+          animation: accessBlink 0.5s infinite, grow 2s ease-out;
+        }
+
+        .enter-button {
+          font-family: 'Orbitron', monospace;
+          font-size: 1.5rem;
+          font-weight: 700;
+          background: transparent;
+          border: 2px solid #00ff00;
+          color: #00ff00;
+          padding: 15px 40px;
+          margin-top: 20px;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          text-transform: uppercase;
+          letter-spacing: 2px;
+          position: relative;
+          overflow: hidden;
+          min-height: 44px;
+          min-width: 120px;
+        }
+
+        .enter-button:hover {
+          background: rgba(0, 255, 0, 0.1);
+          box-shadow:
+            0 0 20px rgba(0, 255, 0, 0.5),
+            inset 0 0 20px rgba(0, 255, 0, 0.1);
+          transform: scale(1.05);
+        }
+
+        .enter-button:active {
+          transform: scale(0.95);
+        }
+
+        .enter-button::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.2), transparent);
+          transition: left 0.5s;
+        }
+
+        .enter-button:hover::before {
+          left: 100%;
+        }
+
+        @keyframes accessBlink {
+          0%, 50% { opacity: 1; }
+          51%, 100% { opacity: 0.7; }
+        }
+
+        @keyframes grow {
+          0% {
+            transform: scale(0.8);
+            opacity: 0;
+          }
+          100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+
+        .particles {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 3;
+        }
+
+        .particle {
+          position: absolute;
+          background: #00ff00;
+          border-radius: 50%;
+          animation: float 6s infinite linear;
+          opacity: 0.6;
+        }
+
+        @keyframes float {
+          0% {
+            transform: translateY(100vh) rotate(0deg);
+            opacity: 0;
+          }
+          10% { opacity: 0.6; }
+          90% { opacity: 0.6; }
+          100% {
+            transform: translateY(-100px) rotate(360deg);
+            opacity: 0;
+          }
+        }
+
+        .hidden {
+          opacity: 0;
+        }
+
+        .network-grid {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-image:
+            linear-gradient(rgba(0, 255, 0, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 255, 0, 0.1) 1px, transparent 1px);
+          background-size: 50px 50px;
+          z-index: 0;
+          animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+          0% { transform: translate(0, 0); }
+          100% { transform: translate(50px, 50px); }
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+          .terminal-window {
+            width: 95%;
+            padding: 15px;
+            margin: 10px;
+            transform: scale(1) translateY(0) !important;
+            transition: opacity 1s ease-out;
+          }
+
+          .title {
+            font-size: 2.2rem;
+            margin: 20px 0;
+          }
+
+          .command-line {
+            font-size: 1rem;
+            margin: 12px 0;
+          }
+
+          .status-bars {
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin: 20px 0;
+          }
+
+          .enter-button {
+            font-size: 1.2rem;
+            padding: 18px 35px;
+            margin-top: 15px;
+            min-height: 48px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .terminal-window {
+            width: 98%;
+            padding: 12px;
+            margin: 5px;
+          }
+
+          .title {
+            font-size: 1.8rem;
+            margin: 15px 0;
+          }
+
+          .command-line {
+            font-size: 0.9rem;
+            margin: 10px 0;
+          }
+
+          .enter-button {
+            font-size: 1rem;
+            padding: 20px 30px;
+            margin-top: 12px;
+            min-height: 50px;
+            letter-spacing: 1px;
+          }
+        }
+      `}</style>
+    </>
+  );
+}
