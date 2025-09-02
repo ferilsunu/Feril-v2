@@ -1,14 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Layout from '../components/Layout';
 import BackgroundEffects from '../components/BackgroundEffects';
 import Navigation from '../components/Navigation';
 
 export default function Portfolio() {
   const [activeSection, setActiveSection] = useState('profile');
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [visitedSections, setVisitedSections] = useState(new Set(['profile']));
+
 
   // Typewriter effect function with erase capability
-  const typeWriter = (element: HTMLElement, text: string, speed: number = 100): Promise<void> => {
+  const typeWriter = useCallback((element: HTMLElement, text: string, speed: number = 100): Promise<void> => {
     return new Promise((resolve) => {
       element.textContent = '';
       element.style.borderRight = '2px solid var(--primary-green)';
@@ -24,10 +25,10 @@ export default function Portfolio() {
         }
       }, speed);
     });
-  };
+  }, []);
 
   // Erase text function
-  const eraseText = (element: HTMLElement, speed: number = 50): Promise<void> => {
+  const eraseText = useCallback((element: HTMLElement, speed: number = 50): Promise<void> => {
     return new Promise((resolve) => {
       const text = element.textContent || '';
       let i = text.length;
@@ -42,106 +43,45 @@ export default function Portfolio() {
         }
       }, speed);
     });
-  };
+  }, []);
 
-  // Simple infinite typewriter loop - only name and title
-  const startInfiniteTypewriter = async (nameElement: HTMLElement, titleElement: HTMLElement) => {
-    while (true) {
-      // Type name
-      await typeWriter(nameElement, 'Feril Sunu', 120);
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Pause
+  // Terminal helper functions
+  const typeCommand = useCallback((text: string, element: HTMLElement, callback: () => void) => {
+    element.textContent = '';
+    let charIndex = 0;
 
-      // Type title
-      await typeWriter(titleElement, 'Software Developer', 100);
-      await new Promise(resolve => setTimeout(resolve, 3000)); // Longer pause to read
-
-      // Erase title
-      await eraseText(titleElement, 50);
-      await new Promise(resolve => setTimeout(resolve, 300)); // Short pause
-
-      // Erase name
-      await eraseText(nameElement, 50);
-      await new Promise(resolve => setTimeout(resolve, 800)); // Pause before next cycle
-    }
-  };
-
-  // Initialize profile animations when component mounts
-  useEffect(() => {
-    let animationActive = false;
-
-    if (activeSection === 'profile') {
-      const nameElement = document.querySelector('.name') as HTMLElement;
-      const titleElement = document.querySelector('.title') as HTMLElement;
-      const contactItems = document.querySelectorAll('.contact-item') as NodeListOf<HTMLElement>;
-
-      if (nameElement && titleElement && !animationActive) {
-        animationActive = true;
-
-        // Show contact items first
-        contactItems.forEach((item, index) => {
-          const element = item as HTMLElement;
-          element.style.opacity = '0';
-          element.style.transform = 'translateY(20px)';
-
-          setTimeout(() => {
-            element.style.transition = 'all 0.6s ease-out';
-            element.style.opacity = '1';
-            element.style.transform = 'translateY(0)';
-          }, 500 + (index * 200));
-        });
-
-        // Start infinite typewriter immediately
-        startInfiniteTypewriter(nameElement, titleElement);
+    const typeChar = () => {
+      if (charIndex < text.length) {
+        element.textContent += text.charAt(charIndex);
+        charIndex++;
+        setTimeout(typeChar, 35);
+      } else {
+        setTimeout(callback, 300);
       }
-    }
-  }, [activeSection, startInfiniteTypewriter]);
-
-  const initializeProfileAnimations = () => {
-    // Keep content visible - no hiding elements
-    console.log('Profile animations initialized - content should be visible');
-  };
-
-  useEffect(() => {
-    // Initialize project filters
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const projectItems = document.querySelectorAll('.project-item');
-
-    const filterProjects = (category: string) => {
-      projectItems.forEach((item, index) => {
-        const itemCategories = item.getAttribute('data-category')?.split(' ') || [];
-        const shouldShow = category === 'all' || itemCategories.includes(category);
-
-        const element = item as HTMLElement;
-        element.classList.add('filtering');
-
-        setTimeout(() => {
-          if (shouldShow) {
-            element.classList.remove('hidden');
-            setTimeout(() => {
-              element.style.opacity = '1';
-              element.style.transform = 'scale(1)';
-            }, index * 50);
-          } else {
-            element.classList.add('hidden');
-            element.style.opacity = '0';
-            element.style.transform = 'scale(0.8)';
-          }
-
-          setTimeout(() => {
-            element.classList.remove('filtering');
-          }, 400);
-        }, 50);
-      });
     };
+    typeChar();
+  }, []);
 
-    // Initial filter
-    filterProjects(activeFilter);
-  }, [activeFilter]);
+  const typeOutput = useCallback((text: string, element: HTMLElement, callback: () => void) => {
+    element.textContent = '';
+    let charIndex = 0;
+
+    const typeChar = () => {
+      if (charIndex < text.length) {
+        element.textContent += text.charAt(charIndex);
+        charIndex++;
+        setTimeout(typeChar, 20);
+      } else {
+        setTimeout(callback, 300);
+      }
+    };
+    typeChar();
+  }, []);
 
   // Terminal animation functionality
-  const showTerminalAnimation = (sectionId: string, callback: () => void) => {
-    // Skip terminal animation for profile section
-    if (sectionId === 'profile') {
+  const showTerminalAnimation = useCallback((sectionId: string, callback: () => void) => {
+    // Skip terminal animation for profile section or already visited sections
+    if (sectionId === 'profile' || visitedSections.has(sectionId)) {
       callback();
       return;
     }
@@ -222,49 +162,91 @@ export default function Portfolio() {
         });
       }, 300);
     }, 300);
-  };
+  }, [typeCommand, typeOutput, visitedSections]);
 
-  const typeCommand = (text: string, element: HTMLElement, callback: () => void) => {
-    element.textContent = '';
-    let charIndex = 0;
+  // Initialize profile animations when component mounts
+  useEffect(() => {
+    let animationActive = false;
+    let animationCleanup: (() => void) | null = null;
 
-    const typeChar = () => {
-      if (charIndex < text.length) {
-        element.textContent += text.charAt(charIndex);
-        charIndex++;
-        setTimeout(typeChar, 35);
-      } else {
-        setTimeout(callback, 300);
+    if (activeSection === 'profile') {
+      const nameElement = document.querySelector('.name') as HTMLElement;
+      const titleElement = document.querySelector('.title') as HTMLElement;
+      const contactItems = document.querySelectorAll('.contact-item') as NodeListOf<HTMLElement>;
+
+      if (nameElement && titleElement && !animationActive) {
+        animationActive = true;
+
+        // Show contact items first
+        contactItems.forEach((item, index) => {
+          const element = item as HTMLElement;
+          element.style.opacity = '0';
+          element.style.transform = 'translateY(20px)';
+
+          setTimeout(() => {
+            element.style.transition = 'all 0.6s ease-out';
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+          }, 500 + (index * 200));
+        });
+
+        // Start infinite typewriter immediately
+        let isRunning = true;
+        const runTypewriter = async () => {
+          while (isRunning) {
+            try {
+              // Type name
+              await typeWriter(nameElement, 'Feril Sunu', 120);
+              if (!isRunning) break;
+              await new Promise(resolve => setTimeout(resolve, 2000)); // Pause
+
+              // Type title
+              await typeWriter(titleElement, 'Software Developer', 100);
+              if (!isRunning) break;
+              await new Promise(resolve => setTimeout(resolve, 3000)); // Longer pause to read
+
+              // Erase title
+              await eraseText(titleElement, 50);
+              if (!isRunning) break;
+              await new Promise(resolve => setTimeout(resolve, 300)); // Short pause
+
+              // Erase name
+              await eraseText(nameElement, 50);
+              if (!isRunning) break;
+              await new Promise(resolve => setTimeout(resolve, 800)); // Pause before next cycle
+            } catch (error) {
+              // Handle typewriter error silently and break the loop
+              break;
+            }
+          }
+        };
+
+        runTypewriter();
+        animationCleanup = () => {
+          isRunning = false;
+        };
+      }
+    }
+
+    return () => {
+      if (animationCleanup) {
+        animationCleanup();
       }
     };
-    typeChar();
-  };
+  }, [activeSection, typeWriter, eraseText]);
 
-  const typeOutput = (text: string, element: HTMLElement, callback: () => void) => {
-    element.textContent = '';
-    let charIndex = 0;
 
-    const typeChar = () => {
-      if (charIndex < text.length) {
-        element.textContent += text.charAt(charIndex);
-        charIndex++;
-        setTimeout(typeChar, 20);
-      } else {
-        setTimeout(callback, 300);
-      }
-    };
-    typeChar();
-  };
 
-  const handleSectionChange = (section: string) => {
+  const handleSectionChange = useCallback((section: string) => {
     showTerminalAnimation(section, () => {
       setActiveSection(section);
+      setVisitedSections(prev => new Set(prev).add(section));
     });
-  };
+  }, [showTerminalAnimation]);
 
-  const handleFilterChange = (filter: string) => {
-    setActiveFilter(filter);
-  };
+
+
+
 
   return (
     <Layout>
@@ -367,14 +349,7 @@ export default function Portfolio() {
                   </div>
                   <span className="card-date">09/2023 – Present</span>
                 </div>
-                <div className="card-content">
-                  <ul>
-                    <li>Designed and implemented database architectures for financial transactions using Oracle 19c and MongoDB</li>
-                    <li>Managed database security protocols and implemented encryption for sensitive financial data</li>
-                    <li>Optimized database performance through query tuning and implemented disaster recovery strategies</li>
-                    <li>Collaborated with cross-functional teams to ensure database systems aligned with business requirements</li>
-                  </ul>
-                </div>
+
               </div>
             </div>
 
@@ -388,14 +363,7 @@ export default function Portfolio() {
                   </div>
                   <span className="card-date">04/2023 – 09/2023</span>
                 </div>
-                <div className="card-content">
-                  <ul>
-                    <li>Maintained database systems on Linux/Unix environments ensuring high availability and performance</li>
-                    <li>Implemented backup and recovery procedures for critical database systems</li>
-                    <li>Assisted in cluster management and failover implementation for high-availability systems</li>
-                    <li>Participated in capacity planning and storage management initiatives</li>
-                  </ul>
-                </div>
+
               </div>
             </div>
 
@@ -409,14 +377,7 @@ export default function Portfolio() {
                   </div>
                   <span className="card-date">11/2022 – 04/2023</span>
                 </div>
-                <div className="card-content">
-                  <ul>
-                    <li>Managed MongoDB databases and implemented security best practices</li>
-                    <li>Created and maintained database documentation and standard operating procedures</li>
-                    <li>Assisted in implementing storage management solutions and backup strategies</li>
-                    <li>Collaborated with development teams to optimize database performance</li>
-                  </ul>
-                </div>
+
               </div>
             </div>
           </div>
@@ -728,39 +689,7 @@ export default function Portfolio() {
             <i className="fas fa-project-diagram" style={{ marginRight: '12px' }}></i>Projects
           </h2>
 
-          {/* Project Category Filters */}
-          <div className="project-filters">
-            <button
-              className={`filter-btn ${activeFilter === 'all' ? 'active' : ''}`}
-              onClick={() => handleFilterChange('all')}
-            >
-              <i className="fas fa-th"></i>All Projects
-            </button>
-            <button
-              className={`filter-btn ${activeFilter === 'web' ? 'active' : ''}`}
-              onClick={() => handleFilterChange('web')}
-            >
-              <i className="fas fa-globe"></i>Web Apps
-            </button>
-            <button
-              className={`filter-btn ${activeFilter === 'company' ? 'active' : ''}`}
-              onClick={() => handleFilterChange('company')}
-            >
-              <i className="fas fa-building"></i>Company
-            </button>
-            <button
-              className={`filter-btn ${activeFilter === 'personal' ? 'active' : ''}`}
-              onClick={() => handleFilterChange('personal')}
-            >
-              <i className="fas fa-user"></i>Personal
-            </button>
-            <button
-              className={`filter-btn ${activeFilter === 'tools' ? 'active' : ''}`}
-              onClick={() => handleFilterChange('tools')}
-            >
-              <i className="fas fa-tools"></i>Tools
-            </button>
-          </div>
+
 
           {/* Projects Grid */}
           <div className="projects-grid">
@@ -1060,6 +989,62 @@ export default function Portfolio() {
           <div className="cert-grid">
             <div className="image-card">
               <div className="image-card-image">
+                <img src="/certificates/oracle.png" alt="Oracle Cloud Infrastructure 2025 Developer Certificate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+              <div className="image-card-content">
+                <h3 className="image-card-title">Oracle Cloud Infrastructure 2025 Developer</h3>
+                <p className="image-card-subtitle">Oracle Certification</p>
+                <p className="image-card-description">Professional certification demonstrating expertise in developing applications on Oracle Cloud Infrastructure, including cloud-native development, microservices, and OCI services integration.</p>
+                <a href="/certificates/Oracle Cloud Infrastructure 2025 Developer.pdf" target="_blank" rel="noopener noreferrer" className="project-link">
+                  <i className="fas fa-external-link-alt"></i>View Certificate
+                </a>
+              </div>
+            </div>
+
+            <div className="image-card">
+              <div className="image-card-image">
+                <img src="/certificates/oracle.png" alt="Oracle Cloud Infrastructure 2025 Certified Foundations Associate Certificate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+              <div className="image-card-content">
+                <h3 className="image-card-title">Oracle Cloud Infrastructure 2025 Certified Foundations Associate</h3>
+                <p className="image-card-subtitle">Oracle Certification</p>
+                <p className="image-card-description">Foundational certification covering Oracle Cloud Infrastructure core services, architecture, security, pricing, and support models for cloud computing solutions.</p>
+                <a href="/certificates/Oracle Cloud Infrastructure 2025 Certified Foundations Associate.pdf" target="_blank" rel="noopener noreferrer" className="project-link">
+                  <i className="fas fa-external-link-alt"></i>View Certificate
+                </a>
+              </div>
+            </div>
+
+            <div className="image-card">
+              <div className="image-card-image">
+                <img src="/certificates/oracle.png" alt="Oracle Data Platform 2025 Foundations Associate Certificate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+              <div className="image-card-content">
+                <h3 className="image-card-title">Oracle Data Platform 2025 Foundations Associate</h3>
+                <p className="image-card-subtitle">Oracle Certification</p>
+                <p className="image-card-description">Comprehensive certification covering Oracle's data platform services, data management, analytics, machine learning, and data integration solutions on Oracle Cloud.</p>
+                <a href="/certificates/Oracle Data Platform 2025 Foundations Associatee Certificate.pdf" target="_blank" rel="noopener noreferrer" className="project-link">
+                  <i className="fas fa-external-link-alt"></i>View Certificate
+                </a>
+              </div>
+            </div>
+
+            <div className="image-card">
+              <div className="image-card-image">
+                <img src="/certificates/oracle.png" alt="Oracle Certified AI Foundation Associate Certificate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+              <div className="image-card-content">
+                <h3 className="image-card-title">Oracle Certified AI Foundation Associate</h3>
+                <p className="image-card-subtitle">Oracle Certification</p>
+                <p className="image-card-description">Advanced certification demonstrating knowledge of artificial intelligence fundamentals, machine learning concepts, and AI implementation using Oracle&apos;s AI and ML services.</p>
+                <a href="/certificates/Oracle Certified AI Foundation Associate.pdf" target="_blank" rel="noopener noreferrer" className="project-link">
+                  <i className="fas fa-external-link-alt"></i>View Certificate
+                </a>
+              </div>
+            </div>
+
+            <div className="image-card">
+              <div className="image-card-image">
                 <img src="/certificates/IBM.webp" alt="IBM Full Stack Software Developer Certificate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <div className="image-card-content">
@@ -1130,7 +1115,7 @@ export default function Portfolio() {
 
             <div className="image-card">
               <div className="image-card-image">
-              <img src="/certificates/UDEMY.webp" alt="Angular Frontend Bootcamp Certificate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src="/certificates/UDEMY.webp" alt="Angular Frontend Bootcamp Certificate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <div className="image-card-content">
                 <h3 className="image-card-title">PHP Development Certificate</h3>

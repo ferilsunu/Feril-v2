@@ -32,6 +32,15 @@ export default function Navigation({ activeSection, onSectionChange }: Navigatio
               <span className="mobile-nav-text">{item.label}</span>
             </a>
           ))}
+          <a
+            href="https://v1.ferilsunu.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mobile-nav-item external-link"
+          >
+            <i className="fas fa-external-link-alt"></i>
+            <span className="mobile-nav-text">V1</span>
+          </a>
         </div>
       </nav>
 
@@ -56,6 +65,15 @@ export default function Navigation({ activeSection, onSectionChange }: Navigatio
               {item.label}
             </a>
           ))}
+          <a
+            href="https://v1.ferilsunu.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-item external-link"
+          >
+            <i className="fas fa-external-link-alt"></i>
+            V1
+          </a>
         </div>
       </nav>
     </>
