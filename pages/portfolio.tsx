@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import Layout from '../components/Layout';
 import BackgroundEffects from '../components/BackgroundEffects';
 import Navigation from '../components/Navigation';
@@ -290,7 +291,14 @@ export default function Portfolio() {
         <section id="profile" className={`content-section ${activeSection === 'profile' ? 'active' : ''}`}>
           <div className="header-section">
             <div className="profile-container">
-              <img src="/photo.png" alt="Feril Sunu" className="profile-image" />
+              <Image 
+                src="/photo.png" 
+                alt="Feril Sunu" 
+                className="profile-image"
+                width={200}
+                height={200}
+                priority
+              />
               <div className="profile-info">
                 <h1 className="name typewriter">Feril Sunu</h1>
                 <p className="title typewriter">Software Developer</p>
@@ -989,7 +997,13 @@ export default function Portfolio() {
           <div className="cert-grid">
             <div className="image-card">
               <div className="image-card-image">
-                <img src="/certificates/oracle.png" alt="Oracle Cloud Infrastructure 2025 Developer Certificate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <Image 
+                  src="/certificates/oracle.png" 
+                  alt="Oracle Cloud Infrastructure 2025 Developer Certificate" 
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               </div>
               <div className="image-card-content">
                 <h3 className="image-card-title">Oracle Cloud Infrastructure 2025 Developer</h3>
@@ -1003,7 +1017,13 @@ export default function Portfolio() {
 
             <div className="image-card">
               <div className="image-card-image">
-                <img src="/certificates/oracle.png" alt="Oracle Cloud Infrastructure 2025 Certified Foundations Associate Certificate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <Image 
+                  src="/certificates/oracle.png" 
+                  alt="Oracle Cloud Infrastructure 2025 Certified Foundations Associate Certificate" 
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               </div>
               <div className="image-card-content">
                 <h3 className="image-card-title">Oracle Cloud Infrastructure 2025 Certified Foundations Associate</h3>
@@ -1017,12 +1037,18 @@ export default function Portfolio() {
 
             <div className="image-card">
               <div className="image-card-image">
-                <img src="/certificates/oracle.png" alt="Oracle Data Platform 2025 Foundations Associate Certificate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <Image 
+                  src="/certificates/oracle.png" 
+                  alt="Oracle Data Platform 2025 Foundations Associate Certificate" 
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               </div>
               <div className="image-card-content">
                 <h3 className="image-card-title">Oracle Data Platform 2025 Foundations Associate</h3>
                 <p className="image-card-subtitle">Oracle Certification</p>
-                <p className="image-card-description">Comprehensive certification covering Oracle's data platform services, data management, analytics, machine learning, and data integration solutions on Oracle Cloud.</p>
+                <p className="image-card-description">Comprehensive certification covering Oracle&apos;s data platform services, data management, analytics, ~machine learning, and data integration solutions on Oracle Cloud.</p>
                 <a href="/certificates/Oracle Data Platform 2025 Foundations Associatee Certificate.pdf" target="_blank" rel="noopener noreferrer" className="project-link">
                   <i className="fas fa-external-link-alt"></i>View Certificate
                 </a>
@@ -1031,7 +1057,13 @@ export default function Portfolio() {
 
             <div className="image-card">
               <div className="image-card-image">
-                <img src="/certificates/oracle.png" alt="Oracle Certified AI Foundation Associate Certificate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <Image 
+                  src="/certificates/oracle.png" 
+                  alt="Oracle Certified AI Foundation Associate Certificate" 
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               </div>
               <div className="image-card-content">
                 <h3 className="image-card-title">Oracle Certified AI Foundation Associate</h3>
@@ -1045,7 +1077,13 @@ export default function Portfolio() {
 
             <div className="image-card">
               <div className="image-card-image">
-                <img src="/certificates/IBM.webp" alt="IBM Full Stack Software Developer Certificate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <Image 
+                  src="/certificates/IBM.webp" 
+                  alt="IBM Full Stack Software Developer Certificate" 
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               </div>
               <div className="image-card-content">
                 <h3 className="image-card-title">IBM Full Stack Software Developer</h3>
@@ -1059,7 +1097,13 @@ export default function Portfolio() {
 
             <div className="image-card">
               <div className="image-card-image">
-                <img src="/certificates/DELOITTE.webp" alt="Deloitte Developer Job Simulation Certificate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <Image 
+                  src="/certificates/DELOITTE.webp" 
+                  alt="Deloitte Developer Job Simulation Certificate" 
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               </div>
               <div className="image-card-content">
                 <h3 className="image-card-title">Deloitte Developer Job Simulation</h3>
@@ -1073,7 +1117,13 @@ export default function Portfolio() {
 
             <div className="image-card">
               <div className="image-card-image">
-                <img src="/certificates/ACCENTURE.webp" alt="Accenture Developer Job Simulation Certificate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <Image 
+                  src="/certificates/ACCENTURE.webp" 
+                  alt="Accenture Developer Job Simulation Certificate" 
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               </div>
               <div className="image-card-content">
                 <h3 className="image-card-title">Accenture Developer Job Simulation</h3>
@@ -1087,7 +1137,13 @@ export default function Portfolio() {
 
             <div className="image-card">
               <div className="image-card-image">
-                <img src="/certificates/GOLDMANSACHS.webp" alt="Goldman Sachs Job Simulation Certificate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <Image 
+                  src="/certificates/GOLDMANSACHS.webp" 
+                  alt="Goldman Sachs Job Simulation Certificate" 
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               </div>
               <div className="image-card-content">
                 <h3 className="image-card-title">Goldman Sachs Job Simulation</h3>
@@ -1101,7 +1157,13 @@ export default function Portfolio() {
 
             <div className="image-card">
               <div className="image-card-image">
-                <img src="/certificates/UDEMY.webp" alt="Angular Frontend Bootcamp Certificate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <Image 
+                  src="/certificates/UDEMY.webp" 
+                  alt="Angular Frontend Bootcamp Certificate" 
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               </div>
               <div className="image-card-content">
                 <h3 className="image-card-title">Angular Frontend Bootcamp</h3>
@@ -1115,7 +1177,13 @@ export default function Portfolio() {
 
             <div className="image-card">
               <div className="image-card-image">
-                <img src="/certificates/UDEMY.webp" alt="Angular Frontend Bootcamp Certificate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <Image 
+                  src="/certificates/UDEMY.webp" 
+                  alt="Angular Frontend Bootcamp Certificate" 
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               </div>
               <div className="image-card-content">
                 <h3 className="image-card-title">PHP Development Certificate</h3>
