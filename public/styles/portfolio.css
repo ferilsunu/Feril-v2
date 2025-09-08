@@ -738,6 +738,7 @@ Sidebar */
     color: var(--primary-green);
     font-size: 3rem;
     border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+    position: relative; /* Needed for Next.js Image with fill */
 }
 
 .image-card-content {

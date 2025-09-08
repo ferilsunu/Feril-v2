@@ -1001,7 +1001,7 @@ export default function Portfolio() {
                   src="/certificates/oracle.png" 
                   alt="Oracle Cloud Infrastructure 2025 Developer Certificate" 
                   fill
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: 'contain' }}
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
@@ -1021,7 +1021,7 @@ export default function Portfolio() {
                   src="/certificates/oracle.png" 
                   alt="Oracle Cloud Infrastructure 2025 Certified Foundations Associate Certificate" 
                   fill
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: 'contain' }}
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
@@ -1041,7 +1041,7 @@ export default function Portfolio() {
                   src="/certificates/oracle.png" 
                   alt="Oracle Data Platform 2025 Foundations Associate Certificate" 
                   fill
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: 'contain' }}
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
@@ -1061,7 +1061,7 @@ export default function Portfolio() {
                   src="/certificates/oracle.png" 
                   alt="Oracle Certified AI Foundation Associate Certificate" 
                   fill
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: 'contain' }}
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
@@ -1081,7 +1081,7 @@ export default function Portfolio() {
                   src="/certificates/IBM.webp" 
                   alt="IBM Full Stack Software Developer Certificate" 
                   fill
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: 'contain' }}
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
@@ -1101,7 +1101,7 @@ export default function Portfolio() {
                   src="/certificates/DELOITTE.webp" 
                   alt="Deloitte Developer Job Simulation Certificate" 
                   fill
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: 'contain' }}
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
@@ -1121,7 +1121,7 @@ export default function Portfolio() {
                   src="/certificates/ACCENTURE.webp" 
                   alt="Accenture Developer Job Simulation Certificate" 
                   fill
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: 'contain' }}
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
@@ -1141,7 +1141,7 @@ export default function Portfolio() {
                   src="/certificates/GOLDMANSACHS.webp" 
                   alt="Goldman Sachs Job Simulation Certificate" 
                   fill
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: 'contain' }}
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
@@ -1161,7 +1161,7 @@ export default function Portfolio() {
                   src="/certificates/UDEMY.webp" 
                   alt="Angular Frontend Bootcamp Certificate" 
                   fill
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: 'contain' }}
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
@@ -1181,7 +1181,7 @@ export default function Portfolio() {
                   src="/certificates/UDEMY.webp" 
                   alt="Angular Frontend Bootcamp Certificate" 
                   fill
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: 'contain' }}
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
@@ -1197,7 +1197,13 @@ export default function Portfolio() {
 
             <div className="image-card">
               <div className="image-card-image">
-                <i className="fab fa-python" style={{ fontSize: '3rem', color: '#3776ab' }}></i>
+              <Image 
+                  src="/certificates/UDEMY.webp" 
+                  alt="Angular Frontend Bootcamp Certificate" 
+                  fill
+                  style={{ objectFit: 'contain' }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               </div>
               <div className="image-card-content">
                 <h3 className="image-card-title">Python Programming Certificate</h3>
@@ -1211,8 +1217,13 @@ export default function Portfolio() {
 
             <div className="image-card">
               <div className="image-card-image">
-                <i className="fab fa-html5" style={{ fontSize: '2.5rem', color: '#e34f26', marginRight: '10px' }}></i>
-                <i className="fab fa-css3-alt" style={{ fontSize: '2.5rem', color: '#1572b6' }}></i>
+              <Image 
+                  src="/certificates/UDEMY.webp" 
+                  alt="Angular Frontend Bootcamp Certificate" 
+                  fill
+                  style={{ objectFit: 'contain' }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               </div>
               <div className="image-card-content">
                 <h3 className="image-card-title">HTML & CSS Certificate</h3>
